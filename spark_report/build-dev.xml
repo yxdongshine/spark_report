@@ -1,0 +1,85 @@
+<project basedir="." default="Release">
+	<path id="classPath">
+		<fileset dir="web/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	<tstamp>
+		<format property="curTime" pattern="yyyyMMddHHmmss" offset="0" unit="minute" />
+	</tstamp>
+
+	<taskdef name="replaceFile" classname="com.base.ant.ReplaceFileTask" classpathref="classPath" />
+	<typedef name="token" classname="com.base.ant.ReplaceFileTag" classpathref="classPath" />
+
+	<target name="init">
+		<echo message="Release初始化..." />
+		<delete dir="release/web" />
+		<mkdir dir="release/web" />
+	</target>
+	<target name="compile" depends="init">
+		<echo message="开始编译Java源文件..." />
+		<delete dir="release/web" />
+		<mkdir dir="release/web/WEB-INF/classes" />
+		<javac classpathref="classPath" destdir="release/web/WEB-INF/classes" encoding="UTF-8" debug="true" deprecation="false" listfiles="off" includeAntRuntime="no" verbose="ture">
+			<src path="src" />
+		</javac>
+	</target>
+
+	<target name="report" depends="compile">
+		<echo message="打包..." />
+		<copy todir="release/web">
+			<fileset dir="web">
+				<include name="**/web.xml" />
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="release/web/WEB-INF/classes">
+			<fileset dir="config">
+				<include name="**/*.*" />
+			</fileset>
+			<fileset dir="template">
+				<include name="**/*.xlsx" />
+			</fileset>
+		</copy>
+		
+		<replaceFile file="release/web/WEB-INF/classes/appConfig.properties">
+			<token reg="url=jdbc:mysql:[^\s]+" value="url=jdbc:mysql://192.168.9.91:3306/parkcloud?useUnicode=true&amp;characterEncoding=UTF-8" />
+			<token reg="user=[^\s]+" value="user=parkcloud" />
+			<token reg="password=[^\s]+" value="password=parkcloud@123" />
+
+			<token reg="versionMode=[^\s]+" value="versionMode=debug" />
+			<token reg="logType=[^\s]+" value="logType=log4j" />
+			<token reg="fileRoot=[^\s]+" value="fileRoot=/app/fileRoot" />
+
+			<token reg="localCache=[^\s]+" value="localCache=false" />
+			<token reg="redisIP=[^\s]+" value="redisIP=192.168.9.86" />
+			<token reg="redisPort=[^\s]+" value="redisPort=6379" />
+			<token reg="redisTimeout=[^\s]+" value="redisTimeout=10000" />
+			<token reg="redisAuth=[^\s]+" value="redisAuth=redis123456" />
+			
+
+		</replaceFile>
+
+		<war destfile="release/report.war" compress="true">
+			<fileset dir="release/web">
+				<exclude name="**/*.jar" />
+			</fileset>
+			<fileset dir="release/web">
+				<include name="**/framework.jar" />
+				<include name="**/stif-common.jar" />
+				<include name="**/mail.jar" />
+			</fileset>
+		</war>
+		<delete dir="release/web" />
+	</target>
+
+	<target name="Release">
+		<delete dir="release" />
+		<mkdir dir="release" />
+		<property name="tt" value="" />
+		<antcall target="report" />
+	</target>
+</project>

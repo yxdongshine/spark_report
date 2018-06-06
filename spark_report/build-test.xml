@@ -1,0 +1,105 @@
+<project basedir="." default="Release">
+	<path id="classPath">
+		<fileset dir="web/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="libs">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	<tstamp>
+		<format property="curTime" pattern="yyyyMMddHHmmss" offset="0" unit="minute" />
+	</tstamp>
+	<taskdef name="replaceFile" classname="com.base.ant.ReplaceFileTask" classpathref="classPath" />
+	<typedef name="token" classname="com.base.ant.ReplaceFileTag" classpathref="classPath" />
+
+	<target name="init">
+		<echo message="Release初始化..." />
+		<delete dir="release/web" />
+		<mkdir dir="release/web" />
+	</target>
+	<target name="compile" depends="init">
+		<echo message="开始编译Java源文件..." />
+		<delete dir="release/web" />
+		<mkdir dir="release/web/WEB-INF/classes" />
+		<javac classpathref="classPath" destdir="release/web/WEB-INF/classes" encoding="UTF-8" debug="true" deprecation="false" listfiles="off" includeAntRuntime="no" verbose="ture">
+			<src path="src" />
+			<src path="sdk" />
+			<src path="docking" />
+		</javac>
+	</target>
+
+	<target name="invoice" depends="compile">
+		<echo message="打包..." />
+		<copy todir="release/web">
+			<fileset dir="web">
+				<include name="**/web.xml" />
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="release/web/WEB-INF/classes">
+			<fileset dir="config">
+				<include name="**/*.*" />
+			</fileset>
+			<fileset dir="docking">
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+		
+		<ant antfile="build-jars.xml" />
+		
+		<replaceFile file="release/web/WEB-INF/classes/appConfig.properties">
+			<token reg="url=jdbc:mysql:[^\s]+" value="url=jdbc:mysql://192.168.9.86:3306/stif_invoice?useUnicode=true&amp;characterEncoding=UTF-8" />
+			<token reg="user=[^\s]+" value="user=root" />
+			<token reg="password=[^\s]+" value="password=123456" />
+
+			<token reg="versionMode=[^\s]+" value="versionMode=debug" />
+			<token reg="logType=[^\s]+" value="logType=log4j" />
+			<token reg="fileRoot=[^\s]+" value="fileRoot=/app/fileRoot" />
+
+			<token reg="localCache=[^\s]+" value="localCache=false" />
+			<token reg="redisIP=[^\s]+" value="redisIP=192.168.9.86" />
+			<token reg="redisPort=[^\s]+" value="redisPort=6379" />
+			<token reg="redisTimeout=[^\s]+" value="redisTimeout=10000" />
+			<token reg="redisAuth=[^\s]+" value="redisAuth=redis123456" />
+			
+			<token reg="hx.rq.url=[^\s]+" value="hx.rq.url=http://220.195.3.91:9001/dzfp_qyqz_heb/services/dzfpWebService?wsdl" />
+			<token reg="hx.rq.namespaceuri=[^\s]+" value="hx.rq.namespaceuri=http://cxfwebservice.webservice.heb.aisino.com/" />
+			<token reg="hx.rq.localpart=[^\s]+" value="hx.rq.localpart=dzfpHandler" />
+			
+			<token reg="hx.sz.url=[^\s]+" value="hx.sz.url=http://ei.szhtxx.com:8090/front/request/dzfp" />
+			<token reg="hx.sz.dsptbm=[^\s]+" value="hx.sz.dsptbm=P0000001" />
+			<token reg="hx.sz.passWord=[^\s]+" value="hx.sz.passWord=9900217606zZZrXGGPjYT8lQZCSJYqvw==" />
+			
+		</replaceFile>
+
+		<war destfile="release/invoice.war" compress="true">
+			<fileset dir="release/web">
+				<exclude name="**/*.jar" />
+				<exclude name="**/classes/com/sdk/**" />
+				<exclude name="**/classes/invoice_*/**" />
+			</fileset>
+			<fileset dir="release/web">
+				<include name="**/framework.jar" />
+				<include name="**/stif-common.jar" />
+			</fileset>
+		</war>
+		<delete dir="release/web" />
+	</target>
+	
+	<target name="build-jars">
+		<echo message="构建独立jar包" />
+	</target>
+
+
+	<target name="Release">
+		<delete dir="release" />
+		<mkdir dir="release" />
+		<property name="tt" value="" />
+		<antcall target="invoice" />
+		<antcall target="build-jars" />
+	</target>
+</project>
