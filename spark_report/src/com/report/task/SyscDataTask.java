@@ -28,8 +28,8 @@ public class SyscDataTask extends MyTimerTask {
 		// shell所在的地址路径					  
         String shellPath = "/app/module/shell/script_for_syscdata.sh";
         // 最终执行的命令
-        //String cmd = "sh " + shellPath + " " + yesterday+ " " + startTime+ " "+endTime;
-        String cmd = "sh " + shellPath + " " + "2018-06-03"+ " " + "1527955200000" + " "+ "1528041599000";
+        String cmd = "sh " + shellPath + " " + yesterday+ " " + startTime+ " "+endTime;
+       //String cmd = "sh " + shellPath + " " + "2018-06-03"+ " " + "1527955200000" + " "+ "1528041599000";
         /*try {
             // 执行命令，获取执行命令的进程对象
             Process process = Runtime.getRuntime().exec(cmd);

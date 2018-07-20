@@ -1,1 +1,5 @@
+/appConfig.properties
 /com/
+/log4j.properties
+/report.xlsx
+/report0.xlsx

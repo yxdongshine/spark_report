@@ -109,7 +109,7 @@ public class ApplicationMain extends AppInit {
 			long mailDelay = mailTime - nowTime;
 			TaskManager.add(new CycleSendMailTask("CycleSendMailTask"), mailDelay, mailPeriod);
 			log.info("周期性发送邮件任务初始化成功");
-			syscData();
+			///syscData();
 			log.info("周期性同步数据任务初始化成功");
 		} catch (Exception e) {
 			log.error("定时任务初始化出错：" + IOUtils.getStackTrace(e, true));

@@ -116,8 +116,8 @@ public class EveryDayTask extends MyTimerTask {
 			}
 			++rowIndex;
 		}
-		//String title = DateUtils.format(DateUtils.prevDay(1), DateUtils.TO_DAY_LINE);
-		String title = "2018-06-03";
+		String title = DateUtils.format(DateUtils.prevDay(1), DateUtils.TO_DAY_LINE);
+		//String title = "2018-06-03";
 		//循环sql行的所有列
 		Iterator<Cell> cellIt = sqlRow.cellIterator();
 		while (cellIt.hasNext()) {

@@ -85,7 +85,7 @@ public class SshConnectionInstance {
 		try {
 			session.execCommand(cmd);
 			
-			InputStream errIn = session.getStderr();  
+			/*InputStream errIn = session.getStderr();  
 	        SshWirteLogTask errSshwlTask = new SshWirteLogTask(errIn);
 	        ThreadPoolInstance.getThreadPoolInstancle().getThreadPoolExecutor().execute(errSshwlTask);
 	        //errSshwlTask.run();
@@ -111,8 +111,8 @@ public class SshConnectionInstance {
                 // 脚步执行失败
                 // TODO: 通知开发人员，执行失败
             	log.info("sql执行失败："+cmd);
-            }
-			//log.info("执行成功的sql："+cmd);
+            }*/
+			log.info("执行成功的sql："+cmd);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			log.error("执行异常："+IOUtils.getStackTrace(e));
@@ -120,11 +120,11 @@ public class SshConnectionInstance {
 		closeSession();
 		closeConn();
 		// 采用暂停提交最大任务时间
-       /* try {
+        try {
 			Thread.sleep(1000*60*3);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			log.error("休眠异常："+IOUtils.getStackTrace(e));
-		}*/
+		}
 	}  
 }
